@@ -67,6 +67,10 @@ extern char otaPassword[];
 extern unsigned long xclk;
 extern int sensorPID;
 
+extern int servoTilt;
+extern int servoPan;
+extern int motorPWM;
+
 typedef struct {
         httpd_req_t *req;
         size_t len;
@@ -92,52 +96,52 @@ uint8_t temprature_sens_read();
 #endif
 
 void serialDump() {
-    Serial.println();
+    //Serial.println();
     // Module
-    Serial.printf("Name: %s\r\n", myName);
+    //Serial.printf("Name: %s\r\n", myName);
     if (haveTime) {
-        Serial.print("Time: ");
+        //Serial.print("Time: ");
         printLocalTime(true);
     }
-    Serial.printf("Firmware: %s (base: %s)\r\n", myVer, baseVersion);
+    //Serial.printf("Firmware: %s (base: %s)\r\n", myVer, baseVersion);
     float sketchPct = 100 * sketchSize / sketchSpace;
-    Serial.printf("Sketch Size: %i (total: %i, %.1f%% used)\r\n", sketchSize, sketchSpace, sketchPct);
-    Serial.printf("MD5: %s\r\n", sketchMD5.c_str());
-    Serial.printf("ESP sdk: %s\r\n", ESP.getSdkVersion());
+    //Serial.printf("Sketch Size: %i (total: %i, %.1f%% used)\r\n", sketchSize, sketchSpace, sketchPct);
+    //Serial.printf("MD5: %s\r\n", sketchMD5.c_str());
+    //Serial.printf("ESP sdk: %s\r\n", ESP.getSdkVersion());
     if (otaEnabled) {
          if (strlen(otaPassword) != 0) {
-            Serial.printf("OTA: Enabled, Password: %s\n\r", otaPassword);
+            //Serial.printf("OTA: Enabled, Password: %s\n\r", otaPassword);
          } else {
-            Serial.printf("OTA: Enabled, No Password! (insecure)\n\r");
+            //Serial.printf("OTA: Enabled, No Password! (insecure)\n\r");
          }
     } else {
-        Serial.printf("OTA: Disabled\n\r");
+        //Serial.printf("OTA: Disabled\n\r");
     }
     // Network
     if (accesspoint) {
         if (captivePortal) {
-            Serial.printf("WiFi Mode: AccessPoint with captive portal\r\n");
+            //Serial.printf("WiFi Mode: AccessPoint with captive portal\r\n");
         } else {
-            Serial.printf("WiFi Mode: AccessPoint\r\n");
+            //Serial.printf("WiFi Mode: AccessPoint\r\n");
         }
-        Serial.printf("WiFi SSID: %s\r\n", apName);
+        //Serial.printf("WiFi SSID: %s\r\n", apName);
     } else {
-        Serial.printf("WiFi Mode: Client\r\n");
+        //Serial.printf("WiFi Mode: Client\r\n");
         String ssidName = WiFi.SSID();
-        Serial.printf("WiFi Ssid: %s\r\n", ssidName.c_str());
-        Serial.printf("WiFi Rssi: %i\r\n", WiFi.RSSI());
+        //Serial.printf("WiFi Ssid: %s\r\n", ssidName.c_str());
+        //Serial.printf("WiFi Rssi: %i\r\n", WiFi.RSSI());
         String bssid = WiFi.BSSIDstr();
-        Serial.printf("WiFi BSSID: %s\r\n", bssid.c_str());
+        //Serial.printf("WiFi BSSID: %s\r\n", bssid.c_str());
     }
-    Serial.printf("WiFi IP address: %d.%d.%d.%d\r\n", ip[0], ip[1], ip[2], ip[3]);
+    //Serial.printf("WiFi IP address: %d.%d.%d.%d\r\n", ip[0], ip[1], ip[2], ip[3]);
     if (!accesspoint) {
-        Serial.printf("WiFi Netmask: %d.%d.%d.%d\r\n", net[0], net[1], net[2], net[3]);
-        Serial.printf("WiFi Gateway: %d.%d.%d.%d\r\n", gw[0], gw[1], gw[2], gw[3]);
+        //Serial.printf("WiFi Netmask: %d.%d.%d.%d\r\n", net[0], net[1], net[2], net[3]);
+        //Serial.printf("WiFi Gateway: %d.%d.%d.%d\r\n", gw[0], gw[1], gw[2], gw[3]);
     }
-    Serial.printf("WiFi Http port: %i, Stream port: %i\r\n", httpPort, streamPort);
+    //Serial.printf("WiFi Http port: %i, Stream port: %i\r\n", httpPort, streamPort);
     byte mac[6];
     WiFi.macAddress(mac);
-    Serial.printf("WiFi MAC: %02X:%02X:%02X:%02X:%02X:%02X\r\n", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+    //Serial.printf("WiFi MAC: %02X:%02X:%02X:%02X:%02X:%02X\r\n", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
     // System
     int64_t sec = esp_timer_get_time() / 1000000;
     int64_t upDays = int64_t(floor(sec/86400));
@@ -146,31 +150,31 @@ void serialDump() {
     int upSec = sec % 60;
     int McuTc = (temprature_sens_read() - 32) / 1.8; // celsius
     int McuTf = temprature_sens_read(); // fahrenheit
-    Serial.printf("System up: %" PRId64 ":%02i:%02i:%02i (d:h:m:s)\r\n", upDays, upHours, upMin, upSec);
-    Serial.printf("Active streams: %i, Previous streams: %lu, Images captured: %lu\r\n", streamCount, streamsServed, imagesServed);
-    Serial.printf("CPU Freq: %i MHz, Xclk Freq: %i MHz\r\n", ESP.getCpuFreqMHz(), xclk);
-    Serial.printf("MCU temperature : %i C, %i F  (approximate)\r\n", McuTc, McuTf);
-    Serial.printf("Heap: %i, free: %i, min free: %i, max block: %i\r\n", ESP.getHeapSize(), ESP.getFreeHeap(), ESP.getMinFreeHeap(), ESP.getMaxAllocHeap());
+    //Serial.printf("System up: %" PRId64 ":%02i:%02i:%02i (d:h:m:s)\r\n", upDays, upHours, upMin, upSec);
+    //Serial.printf("Active streams: %i, Previous streams: %lu, Images captured: %lu\r\n", streamCount, streamsServed, imagesServed);
+    //Serial.printf("CPU Freq: %i MHz, Xclk Freq: %i MHz\r\n", ESP.getCpuFreqMHz(), xclk);
+    //Serial.printf("MCU temperature : %i C, %i F  (approximate)\r\n", McuTc, McuTf);
+    //Serial.printf("Heap: %i, free: %i, min free: %i, max block: %i\r\n", ESP.getHeapSize(), ESP.getFreeHeap(), ESP.getMinFreeHeap(), ESP.getMaxAllocHeap());
     if(psramFound()) {
-        Serial.printf("Psram: %i, free: %i, min free: %i, max block: %i\r\n", ESP.getPsramSize(), ESP.getFreePsram(), ESP.getMinFreePsram(), ESP.getMaxAllocPsram());
+        //Serial.printf("Psram: %i, free: %i, min free: %i, max block: %i\r\n", ESP.getPsramSize(), ESP.getFreePsram(), ESP.getMinFreePsram(), ESP.getMaxAllocPsram());
     } else {
-        Serial.printf("Psram: Not found; please check your board configuration.\r\n");
-        Serial.printf("- High resolution/quality settings will show incomplete frames to low memory.\r\n");
+        //Serial.printf("Psram: Not found; please check your board configuration.\r\n");
+        //Serial.printf("- High resolution/quality settings will show incomplete frames to low memory.\r\n");
     }
     // Filesystems
     if (filesystem && (SPIFFS.totalBytes() > 0)) {
-        Serial.printf("Spiffs: %i, used: %i\r\n", SPIFFS.totalBytes(), SPIFFS.usedBytes());
+        //Serial.printf("Spiffs: %i, used: %i\r\n", SPIFFS.totalBytes(), SPIFFS.usedBytes());
     } else {
-        Serial.printf("Spiffs: No filesystem found, please check your board configuration.\r\n");
-        Serial.printf("- Saving and restoring camera settings will not function without this.\r\n");
+        //Serial.printf("Spiffs: No filesystem found, please check your board configuration.\r\n");
+        //Serial.printf("- Saving and restoring camera settings will not function without this.\r\n");
     }
-    Serial.println("Preferences file: ");
+    //Serial.println("Preferences file: ");
     dumpPrefs(SPIFFS);
     if (critERR.length() > 0) {
-        Serial.printf("\r\n\r\nAn error or halt has occurred with Camera Hardware, see previous messages.\r\n");
-        Serial.printf("A reboot is required to recover from this.\r\nError message: (html)\r\n %s\r\n\r\n", critERR.c_str());
+        //Serial.printf("\r\n\r\nAn error or halt has occurred with Camera Hardware, see previous messages.\r\n");
+        //Serial.printf("A reboot is required to recover from this.\r\nError message: (html)\r\n %s\r\n\r\n", critERR.c_str());
     }
-    Serial.println();
+    //Serial.println();
     return;
 }
 
@@ -178,7 +182,7 @@ static esp_err_t capture_handler(httpd_req_t *req){
     camera_fb_t * fb = NULL;
     esp_err_t res = ESP_OK;
 
-    Serial.println("Capture Requested");
+    //Serial.println("Capture Requested");
     if (autoLamp && (lampVal != -1)) {
         setLamp(lampVal);
         delay(75); // coupled with the status led flash this gives ~150ms for lamp to settle.
@@ -189,7 +193,7 @@ static esp_err_t capture_handler(httpd_req_t *req){
 
     fb = esp_camera_fb_get();
     if (!fb) {
-        Serial.println("CAPTURE: failed to acquire frame");
+        //Serial.println("CAPTURE: failed to acquire frame");
         httpd_resp_send_500(req);
         if (autoLamp && (lampVal != -1)) setLamp(0);
         return ESP_FAIL;
@@ -205,14 +209,14 @@ static esp_err_t capture_handler(httpd_req_t *req){
         res = httpd_resp_send(req, (const char *)fb->buf, fb->len);
     } else {
         res = ESP_FAIL;
-        Serial.println("Capture Error: Non-JPEG image returned by camera module");
+        //Serial.println("Capture Error: Non-JPEG image returned by camera module");
     }
     esp_camera_fb_return(fb);
     fb = NULL;
 
     int64_t fr_end = esp_timer_get_time();
     if (debugData) {
-        Serial.printf("JPG: %uB %ums\r\n", (uint32_t)(fb_len), (uint32_t)((fr_end - fr_start)/1000));
+        //Serial.printf("JPG: %uB %ums\r\n", (uint32_t)(fb_len), (uint32_t)((fr_end - fr_start)/1000));
     }
     imagesServed++;
     if (autoLamp && (lampVal != -1)) {
@@ -230,7 +234,7 @@ static esp_err_t stream_handler(httpd_req_t *req){
 
     streamKill = false;
 
-    Serial.println("Stream requested");
+    //Serial.println("Stream requested");
     if (autoLamp && (lampVal != -1)) setLamp(lampVal);
     streamCount = 1;  // at present we only have one stream handler, so values are 0 or 1..
     flashLED(75);     // double flash of status LED
@@ -246,7 +250,7 @@ static esp_err_t stream_handler(httpd_req_t *req){
     if(res != ESP_OK){
         streamCount = 0;
         if (autoLamp && (lampVal != -1)) setLamp(0);
-        Serial.println("STREAM: failed to set HTTP response type");
+        //Serial.println("STREAM: failed to set HTTP response type");
         return res;
     }
 
@@ -259,11 +263,11 @@ static esp_err_t stream_handler(httpd_req_t *req){
     while(true){
         fb = esp_camera_fb_get();
         if (!fb) {
-            Serial.println("STREAM: failed to acquire frame");
+            //Serial.println("STREAM: failed to acquire frame");
             res = ESP_FAIL;
         } else {
             if(fb->format != PIXFORMAT_JPEG){
-                Serial.println("STREAM: Non-JPEG frame returned by camera module");
+                //Serial.println("STREAM: Non-JPEG frame returned by camera module");
                 res = ESP_FAIL;
             } else {
                 _jpg_buf_len = fb->len;
@@ -291,12 +295,12 @@ static esp_err_t stream_handler(httpd_req_t *req){
         if(res != ESP_OK){
             // This is the error exit point from the stream loop.
             // We end the stream here only if a Hard failure has been encountered or the connection has been interrupted.
-            Serial.printf("Stream failed, code = %i : %s\r\n", res, esp_err_to_name(res));
+            //Serial.printf("Stream failed, code = %i : %s\r\n", res, esp_err_to_name(res));
             break;
         }
         if((res != ESP_OK) || streamKill){
             // We end the stream here when a kill is signalled.
-            Serial.printf("Stream killed\r\n");
+            //Serial.printf("Stream killed\r\n");
             break;
         }
         int64_t frame_time = esp_timer_get_time() - last_frame;
@@ -305,9 +309,11 @@ static esp_err_t stream_handler(httpd_req_t *req){
         delay(frame_delay);
 
         if (debugData) {
-            Serial.printf("MJPG: %uB %ums, delay: %ums, framerate (%.1ffps)\r\n",
+          /*
+            //Serial.printf("MJPG: %uB %ums, delay: %ums, framerate (%.1ffps)\r\n",
                 (uint32_t)(_jpg_buf_len),
                 (uint32_t)frame_time, frame_delay, 1000.0 / (uint32_t)(frame_time + frame_delay));
+                */
         }
         last_frame = esp_timer_get_time();
     }
@@ -315,7 +321,7 @@ static esp_err_t stream_handler(httpd_req_t *req){
     streamsServed++;
     streamCount = 0;
     if (autoLamp && (lampVal != -1)) setLamp(0);
-    Serial.println("Stream ended");
+    //Serial.println("Stream ended");
     last_frame = 0;
     return res;
 }
@@ -362,6 +368,65 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     if(!strcmp(variable, "framesize")) {
         if(s->pixformat == PIXFORMAT_JPEG) res = s->set_framesize(s, (framesize_t)val);
     }
+
+   else if(!strcmp(variable, "tilt")) {
+        servoTilt=val;
+        uint32_t duty = (((float(val)/180.0)
+              *2000)/20000.0*65536.0) + 1634;
+         // convert 0-180 degrees to 0-65536
+       ledcWrite(2,duty);
+        // set channel to pos
+   }
+   else if(!strcmp(variable, "pan")) {
+        servoPan=val;
+        uint32_t duty = (((float(val)/180.0)
+              *2000)/20000.0*65536.0) + 1634;
+         // convert 0-180 degrees to 0-65536
+       ledcWrite(3,duty);
+        // set channel to pos
+   }
+   else if(!strcmp(variable, "motorspwm")) {
+    if(0 < val <= 255) {
+      motorPWM=val;
+      ledcWrite(4, val);
+     }
+   }
+
+   else if(!strcmp(variable, "forward")) {
+      digitalWrite(14, HIGH);
+      digitalWrite(2, LOW); 
+      
+      digitalWrite(1, HIGH);     
+      digitalWrite(3, LOW);
+   }
+   else if(!strcmp(variable, "backward")) {
+      digitalWrite(14, LOW);
+      digitalWrite(2, HIGH);
+
+      digitalWrite(1, LOW);
+      digitalWrite(3, HIGH);
+   }
+   else if(!strcmp(variable, "right")) {
+      digitalWrite(14, HIGH);
+      digitalWrite(2, LOW); 
+
+      digitalWrite(1, LOW);     
+      digitalWrite(3, HIGH);
+   }
+   else if(!strcmp(variable, "left")) {
+      digitalWrite(14, LOW);
+      digitalWrite(2, HIGH); 
+
+      digitalWrite(1, HIGH);     
+      digitalWrite(3, LOW);
+   }
+   else if(!strcmp(variable, "stop")) {
+      digitalWrite(14, LOW);
+      digitalWrite(2, LOW);
+      digitalWrite(1, LOW);
+      digitalWrite(3, LOW);
+   }
+    
     else if(!strcmp(variable, "quality")) res = s->set_quality(s, val);
     else if(!strcmp(variable, "xclk")) { xclk = val; res = s->set_xclk(s, LEDC_TIMER_0, val); }
     else if(!strcmp(variable, "contrast")) res = s->set_contrast(s, val);
@@ -420,11 +485,11 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         periph_module_disable(PERIPH_I2C1_MODULE);
         periph_module_reset(PERIPH_I2C0_MODULE);
         periph_module_reset(PERIPH_I2C1_MODULE);
-        Serial.print("REBOOT requested");
+        //Serial.print("REBOOT requested");
         while(true) {
           flashLED(50);
           delay(150);
-          Serial.print('.');
+          //Serial.print('.');
         }
     }
     else {
@@ -525,7 +590,7 @@ static esp_err_t logo_svg_handler(httpd_req_t *req){
 
 static esp_err_t dump_handler(httpd_req_t *req){
     flashLED(75);
-    Serial.println("\r\nDump requested via Web");
+    //Serial.println("\r\nDump requested via Web");
     serialDump();
     static char dumpOut[2000] = "";
     char * d = dumpOut;
@@ -633,7 +698,7 @@ static esp_err_t dump_handler(httpd_req_t *req){
 
 static esp_err_t stop_handler(httpd_req_t *req){
     flashLED(75);
-    Serial.println("\r\nStream stop requested via Web");
+    //Serial.println("\r\nStream stop requested via Web");
     streamKill = true;
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     return httpd_resp_send(req, NULL, 0);
@@ -648,7 +713,7 @@ static esp_err_t style_handler(httpd_req_t *req){
 
 static esp_err_t streamviewer_handler(httpd_req_t *req){
     flashLED(75);
-    Serial.println("Stream viewer requested");
+    //Serial.println("Stream viewer requested");
     httpd_resp_set_type(req, "text/html");
     httpd_resp_set_hdr(req, "Content-Encoding", "identity");
     return httpd_resp_send(req, (const char *)streamviewer_html, streamviewer_html_len);
@@ -656,7 +721,7 @@ static esp_err_t streamviewer_handler(httpd_req_t *req){
 
 static esp_err_t error_handler(httpd_req_t *req){
     flashLED(75);
-    Serial.println("Sending error page");
+    //Serial.println("Sending error page");
     std::string s(error_html);
     size_t index;
     while ((index = s.find("<APPURL>")) != std::string::npos)
@@ -707,13 +772,13 @@ static esp_err_t index_handler(httpd_req_t *req){
     }
 
     if  (strncmp(view,"simple", sizeof(view)) == 0) {
-        Serial.println("Simple index page requested");
+        //Serial.println("Simple index page requested");
         if (critERR.length() > 0) return error_handler(req);
         httpd_resp_set_type(req, "text/html");
         httpd_resp_set_hdr(req, "Content-Encoding", "identity");
         return httpd_resp_send(req, (const char *)index_simple_html, index_simple_html_len);
     } else if(strncmp(view,"full", sizeof(view)) == 0) {
-        Serial.println("Full index page requested");
+        //Serial.println("Full index page requested");
         if (critERR.length() > 0) return error_handler(req);
         httpd_resp_set_type(req, "text/html");
         httpd_resp_set_hdr(req, "Content-Encoding", "identity");
@@ -723,7 +788,7 @@ static esp_err_t index_handler(httpd_req_t *req){
         return httpd_resp_send(req, (const char *)index_ov2640_html, index_ov2640_html_len);
     } else if(strncmp(view,"portal", sizeof(view)) == 0) {
         //Prototype captive portal landing page.
-        Serial.println("Portal page requested");
+        //Serial.println("Portal page requested");
         std::string s(portal_html);
         size_t index;
         while ((index = s.find("<APPURL>")) != std::string::npos)
@@ -736,8 +801,8 @@ static esp_err_t index_handler(httpd_req_t *req){
         httpd_resp_set_hdr(req, "Content-Encoding", "identity");
         return httpd_resp_send(req, (const char *)s.c_str(), s.length());
     } else  {
-        Serial.print("Unknown page requested: ");
-        Serial.println(view);
+        //Serial.print("Unknown page requested: ");
+        //Serial.println(view);
         httpd_resp_send_404(req);
         return ESP_FAIL;
     }
@@ -847,7 +912,7 @@ void startCameraServer(int hPort, int sPort){
     // Request Handlers; config.max_uri_handlers (above) must be >= the number of handlers
     config.server_port = hPort;
     config.ctrl_port = hPort;
-    Serial.printf("Starting web server on port: '%d'\r\n", config.server_port);
+    //Serial.printf("Starting web server on port: '%d'\r\n", config.server_port);
     if (httpd_start(&camera_httpd, &config) == ESP_OK) {
         if (critERR.length() > 0) {
             httpd_register_uri_handler(camera_httpd, &error_uri);
@@ -868,7 +933,7 @@ void startCameraServer(int hPort, int sPort){
 
     config.server_port = sPort;
     config.ctrl_port = sPort;
-    Serial.printf("Starting stream server on port: '%d'\r\n", config.server_port);
+    //Serial.printf("Starting stream server on port: '%d'\r\n", config.server_port);
     if (httpd_start(&stream_httpd, &config) == ESP_OK) {
         if (critERR.length() > 0) {
             httpd_register_uri_handler(camera_httpd, &error_uri);

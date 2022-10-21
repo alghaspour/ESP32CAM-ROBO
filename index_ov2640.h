@@ -23,6 +23,67 @@ const uint8_t index_ov2640_html[] = R"=====(<!doctype html>
   </head>
 
   <body>
+  <script>
+			function run(u) {
+			   var xhr = new XMLHttpRequest();
+			   var url = location.protocol + '//' + location.host + location.pathname + 'control?var=' + u + '&val=0';
+			   xhr.open("GET", url, true);
+			   xhr.onreadystatechange = function () {
+					if (this.readyState == 4 && this.status == 200) {
+					console.log(this.responseText);
+					}
+				}
+				xhr.send();
+				}
+
+  		document.onkeydown = function(e) {
+				switch (e.keyCode) {
+					case 37:
+						document.getElementById("left").style.background = "#fff";
+            document.getElementById("left").style.color = "#ff3034";
+						run("left");
+						break;
+					case 38:
+          	document.getElementById("forward").style.background = "#fff";
+            document.getElementById("forward").style.color = "#ff3034";
+						run("forward");
+						break;
+					case 39:
+            document.getElementById("right").style.background = "#fff";
+            document.getElementById("right").style.color = "#ff3034";
+						run("right");
+						break;
+					case 40:
+            document.getElementById("backward").style.background = "#fff";
+            document.getElementById("backward").style.color = "#ff3034";
+						run("backward");
+						break;
+				}
+			};
+			document.onkeyup = function(e) {
+				switch (e.keyCode) {
+					case 37:
+					case 38:
+					case 39:
+					case 40:
+            run("stop");
+						document.getElementById("left").style.background = "#ff3034";
+            document.getElementById("left").style.color = "#fff";
+
+						document.getElementById("forward").style.background = "#ff3034";
+            document.getElementById("forward").style.color = "#fff";
+
+            document.getElementById("right").style.background = "#ff3034";
+            document.getElementById("right").style.color = "#fff";
+
+            document.getElementById("backward").style.background = "#ff3034";
+            document.getElementById("backward").style.color = "#fff";
+						
+            document.getElementById("stop").style.background = "#fff";
+            document.getElementById("stop").style.color = "#ff3034";
+				}
+			};
+  </script>
     <section class="main">
       <div id="logo">
         <label for="nav-toggle-cb" id="nav-toggle" style="float:left;">&#9776;&nbsp;&nbsp;Settings&nbsp;&nbsp;&nbsp;&nbsp;</label>
@@ -35,6 +96,41 @@ const uint8_t index_ov2640_html[] = R"=====(<!doctype html>
         <div class="hidden" id="sidebar">
           <input type="checkbox" id="nav-toggle-cb" checked="checked">
             <nav id="menu">
+              <div class="input-group" id="motorspwm-group" title="Motors PWM">
+                <label for="motorspwm">Motors PWM</label>
+                <div class="range-min">Off</div>
+                <input type="range" id="motorspwm" min="0" max="255" value="0" class="default-action">
+                <div class="range-max">Full</div>
+              </div>
+              <div class="input-group" id="tilt-group" title="Turret Tilt">
+                <label for="tilt">Turret Tilt</label>
+                <div class="range-min">Up</div>
+                <input type="range" id="tilt" min="0" max="180" value="0" class="default-action">
+                <div class="range-max">Down</div>
+              </div>
+              <div class="input-group" id="pan-group" title="Turret Pan">
+                <label for="pan">Turret Pan</label>
+                <div class="range-min">Left</div>
+                <input type="range" id="pan" min="0" max="180" value="0" class="default-action" style="direction: rtl">
+                <div class="range-max">Right</div>
+              </div>
+              <table style="width:100%;text-align:center;margin: 20px 5px 20px 5px;">
+              <tr>
+                <td style="width:33%;"></td>
+                <td style="width:33%;"><button type="button" id="forward" onmousedown="run('forward')" onmouseup="run('stop')" style="width: 100px;">Forward</button></td>
+                <td style="width:33%;"></td>
+              </tr>
+              <tr>
+                <td style="width:33%;"><button type="button" id="left" onmousedown="run('left')" onmouseup="run('stop')" style="width: 100px;">Left</button></td>
+                <td style="width:33%;"><button type="button" id="stop" onmousedown="run('stop')" onmouseup="run('stop')" style="width: 100px;">Stop</button></td>
+                <td style="width:33%;"><button type="button" id="right" onmousedown="run('right')" onmouseup="run('stop')" style="width: 100px;">Right</button></td>
+              </tr>
+              <tr>
+                <td style="width:33%;"></td>
+                <td style="width:33%;"><button type="button" id="backward" onmousedown="run('backward')" onmouseup="run('stop')" style="width: 100px;">Backward</button></td>
+                <td style="width:33%;"></td>
+              </tr>
+            </table>
               <div class="input-group hidden" id="lamp-group" title="Flashlight LED.&#013;&#013;Warning:&#013;Built-In lamps can be Very Bright! Avoid looking directly at LED&#013;Can draw a lot of power and may cause visual artifacts, affect WiFi or even brownout the camera on high settings">
                 <label for="lamp">Light</label>
                 <div class="range-min">Off</div>
@@ -271,8 +367,8 @@ const uint8_t index_ov2640_html[] = R"=====(<!doctype html>
               </div>
               <div class="input-group" id="code_ver-group">
                 <label for="code_ver">
-                <a href="https://github.com/easytarget/esp32-cam-webserver"
-                  title="ESP32 Cam Webserver on GitHub" target="_blank">Firmware</a></label>
+                <a href="https://github.com/alghaspour/ESP32CAM-ROBO"
+                  title="ESP32 Cam ROBO on GitHub" target="_blank">Firmware</a></label>
                 <div id="code_ver" class="default-action"></div>
               </div>
               <div class="input-group hidden" id="stream-group">
@@ -300,6 +396,7 @@ const uint8_t index_ov2640_html[] = R"=====(<!doctype html>
     const header = document.getElementById('logo')
     const settings = document.getElementById('sidebar')
     const waitSettings = document.getElementById('wait-settings')
+    const motorspwmGroup = document.getElementById('motorspwm-group')
     const lampGroup = document.getElementById('lamp-group')
     const autolampGroup = document.getElementById('autolamp-group')
     const streamGroup = document.getElementById('stream-group')

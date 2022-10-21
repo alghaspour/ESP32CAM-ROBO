@@ -184,28 +184,28 @@ void savePrefs(fs::FS &fs){
 
 void removePrefs(fs::FS &fs) {
   if (fs.exists(PREFERENCES_FILE)) {
-    Serial.printf("Removing %s\r\n", PREFERENCES_FILE);
+    //Serial.printf("Removing %s\r\n", PREFERENCES_FILE);
     if (!fs.remove(PREFERENCES_FILE)) {
-      Serial.println("Error removing preferences");
+      //Serial.println("Error removing preferences");
     }
   } else {
-    Serial.println("No saved preferences file to remove");
+    //Serial.println("No saved preferences file to remove");
   }
 }
 
 void filesystemStart(){
-  Serial.println("Starting internal SPIFFS filesystem");
+  //Serial.println("Starting internal SPIFFS filesystem");
   while ( !SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED) ) {
     // if we sit in this loop something is wrong;
     // if no existing spiffs partition exists one should be automagically created.
-    Serial.println("SPIFFS Mount failed, this can happen on first-run initialisation");
-    Serial.println("If it happens repeatedly check if a SPIFFS partition is present for your board?");
+    //Serial.println("SPIFFS Mount failed, this can happen on first-run initialisation");
+    //Serial.println("If it happens repeatedly check if a SPIFFS partition is present for your board?");
     for (int i=0; i<10; i++) {
       flashLED(100); // Show SPIFFS failure
       delay(100);
     }
     delay(1000);
-    Serial.println("Retrying..");
+   // Serial.println("Retrying..");
   }
   listDir(SPIFFS, "/", 0);
 }
