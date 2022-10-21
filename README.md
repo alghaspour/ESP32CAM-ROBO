@@ -8,4 +8,4 @@ To get 4 Digital output (Motor Driver INs) & 3 PWM (2 for servo , 1 for Motor Dr
 	Related Article (in Persian) : https://vrgl.ir/7gJI1
 </p>
 <br>
-![ESP32CAM-ROBO Interface Screenshot](ESP32CAM-ROBO_Screenshot.png)
+![alt text](https://github.com/alghaspour/ESP32CAM-ROBO/blob/main/ESP32CAM-ROBO_Screenshot.png?raw=true)
