@@ -22,7 +22,7 @@
  *    just replace your ssid and password in the line below.
  */
 
-struct station stationList[] = {{"Unknown Network","Wh6vP0#ZqSrO15Xk", true}};
+struct station stationList[] = {{"YOUR WIFI SSID","YOUR WIFI PASSWORD", true}};
 
 /*
  * You can extend the stationList[] above with additional SSID+Password pairs
